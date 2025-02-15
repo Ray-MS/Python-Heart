@@ -71,6 +71,14 @@ class HeartDataset(VisionDataset):
     def _load_data(self) -> tuple:
         raise NotImplementedError
 
+    def _find_entry_by_index(self, index: int) -> tuple[str, IndexInfo, int]:
+        offset = 0
+        for patient, info in self.index_info.items():
+            if offset <= index < offset+info.n_slice:
+                return patient, info, index-offset
+            offset += info.n_slice
+        raise IndexError
+
 
 def save_index(obj: dict[str, IndexInfo], fpath: Path) -> dict[str, IndexInfo]:
     data = {k: asdict(v) for k, v in obj.items()}
